@@ -30,8 +30,7 @@ jobs:
           pytest tests/ -v
         continue-on-error: false
 
-      # ⚠️ 把下面这一行的 50241 换成你自己的头歌服务器端口号
-      - name: Deploy to Touge Server via SSH (Port 50241)
+      - name: Deploy to Touge Server via SSH (Port 45214)
         run: |
           # 配置SSH环境（强制兼容RSA私钥）
           mkdir -p ~/.ssh
@@ -42,11 +41,11 @@ jobs:
           # 强制设置权限（SSH协议要求）
           chmod 600 ~/.ssh/id_rsa
 
-          # 扫描主机密钥（指定端口）⚠️ 这里的 50241 也要改成你的端口号
-          ssh-keyscan -p 50241 -H ${{ secrets.TOUGE_SERVER_IP }} >> ~/.ssh/known_hosts
+          # 扫描主机密钥（指定端口）
+          ssh-keyscan -p 45214 -H ${{ secrets.TOUGE_SERVER_IP }} >> ~/.ssh/known_hosts
           echo "SSH环境配置完成，尝试连接服务器..."
-          # 连接服务器执行部署（添加-o选项兼容旧版SSH）⚠️ 这里的 50241 同样要改
-          ssh -v -p 50241 -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa root@${{ secrets.TOUGE_SERVER_IP }} << 'EOF'
+          # 连接服务器执行部署（添加-o选项兼容旧版SSH）
+          ssh -v -p 45214 -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa root@${{ secrets.TOUGE_SERVER_IP }} << 'EOF'
             set -e
             echo "成功连接服务器：$(whoami)@$(hostname)"
 
