@@ -30,6 +30,20 @@ jobs:
           pytest tests/ -v
         continue-on-error: false
 
+      - name: Debug - 密钥指纹检查
+        run: |
+          echo "########## 开始检查 GitHub Secret 里的私钥 ##########"
+          printf "%s\n" "${{ secrets.TOUGE_SSH_PRIVATE_KEY }}" > /tmp/deploy_key
+          echo "----- 密钥总字节数 -----"
+          wc -c /tmp/deploy_key
+          echo "----- 第一行（应为 BEGIN OPENSSH PRIVATE KEY）-----"
+          head -1 /tmp/deploy_key
+          echo "----- 最后一行（应为 END OPENSSH PRIVATE KEY）-----"
+          tail -1 /tmp/deploy_key
+          echo "----- 指纹（正确应为 SHA256:kjZ1qmFww2dku+TYsX7phun5OI2JGpknrXAhI64Gf4）-----"
+          ssh-keygen -lf /tmp/deploy_key || echo "!!!! 无法解析：密钥格式有问题 !!!!"
+          echo "########## 检查结束 ##########"
+
       - name: Deploy to Touge Server via SSH (Port 45214)
         run: |
           # 配置SSH环境（强制兼容RSA私钥）
